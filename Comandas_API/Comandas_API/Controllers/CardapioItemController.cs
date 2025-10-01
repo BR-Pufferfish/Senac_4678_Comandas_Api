@@ -10,38 +10,55 @@ namespace Comandas_API.Controllers
     [ApiController] // Define que essa classe é um controlador de API
     public class CardapioItemController : ControllerBase // Herda de ControllerBase para poder responder a requisições http
     {
+
+        List<CardapioItem> cardapios = new List<CardapioItem>()
+        {
+            new CardapioItem
+            {
+                Id = 1,
+                Titulo = "Coxinha",
+                Descricao = "Apenas um lanche",
+                Preco = 5.00M,
+                PossuiPreparo = true,
+            },
+            new CardapioItem
+            {
+                Id = 2,
+                Titulo = "Xis TESTE",
+                Descricao = "Delicioso xis de teste",
+                Preco = 25.00M,
+                PossuiPreparo = true,
+            }
+        };
+
+
         // GET: api/<CardapioItemController>
         [HttpGet] //Anotação que indica se o método responde a requisições GET
-        public IEnumerable<CardapioItem> Get()
+        public IResult GetCardapios()
         {
-            return new CardapioItem[]
-            {
-                //Cria uma lista estática de cardapio e transforma em JSON
-                new CardapioItem
-                {
-                    Id = 1,
-                    Titulo = "Coxinha",
-                    Descricao = "Deliciosa coxinha de frango",
-                    Preco = 5.00M,
-                    PossuiPreparo = true,
-                },
-                new CardapioItem
-                {
-                    Id = 1,
-                    Titulo = "Xis Salada",
-                    Descricao = "Delicioso xis salada",
-                    Preco = 25.00M,
-                    PossuiPreparo = true,
-                },
-            };
+            return Results.Ok(cardapios);
         }
 
         // GET api/<CardapioItemController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
+            // Busca o item do cardápio com o id especificado
+
+            // FirstOrDefault retorna o primeiro item que satisfaz a condição ou null se nenhum for encontrado
+            var cardapio = cardapios.FirstOrDefault(c => c.Id == id);
+            
+            if (cardapio == null)
+            {
+                // Se não encontrar, retorna um status 404 (Not Found)
+                return Results.NotFound("Cardápio não encontrado...");
+            }
+
+            //retorna o valor para o endpoint da API
+            return Results.Ok(cardapio);
         }
+
+
 
         // POST api/<CardapioItemController>
         [HttpPost]
