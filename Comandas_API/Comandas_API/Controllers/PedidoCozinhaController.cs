@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Comandas_API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,18 +9,39 @@ namespace Comandas_API.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
+
+        List<PedidoCozinha> pedidosCozinha = new List<PedidoCozinha>()
+        {
+            new PedidoCozinha
+            {
+                Id = 1,
+                ComandaId = 1,
+            },
+            new PedidoCozinha
+            {
+                Id = 2,
+                ComandaId = 1,
+            },
+        };
+
         // GET: api/<PedidoController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Results.Ok(pedidosCozinha);
         }
 
         // GET api/<PedidoController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult GetResult(int id)
         {
-            return "value";
+            var pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id);
+            if (pedido == null)
+            {
+                return Results.NotFound("Mesa não encontrada...");
+            }
+            return Results.Ok(var pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id);
+);
         }
 
         // POST api/<PedidoController>

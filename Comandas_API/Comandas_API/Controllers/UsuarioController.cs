@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Comandas_API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,18 +9,43 @@ namespace Comandas_API.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
+
+        List<Usuario> usuarios = new List<Usuario>()
+        {
+            new Usuario
+            {
+                Id = 1,
+                Nome = "Admin",
+                Email = "admin@admin.com",
+                Senha = "admin",
+            },
+            new Usuario
+            {
+                Id = 2,
+                Nome = "Usuario",
+                Email = "usuario@usuario.com",
+                Senha = "usuario",
+            },
+        };
+
+
         // GET: api/<UsuarioController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Results.Ok(usuarios);
         }
 
         // GET api/<UsuarioController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult GetResult(int id)
         {
-            return "value";
+            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            if (usuario == null)
+            {
+                return Results.NotFound("Mesa não encontrada...");
+            }
+            return Results.Ok(usuarios);
         }
 
         // POST api/<UsuarioController>
