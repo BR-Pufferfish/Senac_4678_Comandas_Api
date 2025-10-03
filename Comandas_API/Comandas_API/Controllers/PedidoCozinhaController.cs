@@ -40,8 +40,7 @@ namespace Comandas_API.Controllers
             {
                 return Results.NotFound("Mesa não encontrada...");
             }
-            return Results.Ok(var pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id);
-);
+            return Results.Ok(pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id));
         }
 
         // POST api/<PedidoController>

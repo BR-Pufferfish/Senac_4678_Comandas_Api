@@ -10,7 +10,7 @@ namespace Comandas_API.Controllers
     public class UsuarioController : ControllerBase
     {
 
-        List<Usuario> usuarios = new List<Usuario>()
+        static List<Usuario> usuarios = new List<Usuario>()
         {
             new Usuario
             {
@@ -50,8 +50,12 @@ namespace Comandas_API.Controllers
 
         // POST api/<UsuarioController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResul Post([FromBody] Usuario usuario)
         {
+            //adiciona um novo usuario na lista
+            usuarios.Add(usuario);
+            
+            return Results.Created($"/api/usuario/{usuario.Id}", usuario);
         }
 
         // PUT api/<UsuarioController>/5
