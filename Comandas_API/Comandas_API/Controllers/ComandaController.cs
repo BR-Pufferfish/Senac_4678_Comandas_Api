@@ -64,7 +64,7 @@ namespace Comandas_API.Controllers
             {
                 return Results.BadRequest("O número da mesa deve ser maior que 0...");
             }
-            if (comandaCreate.CardapioItemIds.Length ==0)
+            if (comandaCreate.CardapioItemIds.Length == 0)
             {   
                 return Results.BadRequest("A comanda deve ter pelo menos 1 item do cardápio...");
             }
@@ -74,8 +74,9 @@ namespace Comandas_API.Controllers
                 Id = comandas.Count + 1,
                 NomeCliente = comandaCreate.NomeCliente,
                 NumeroMesa = comandaCreate.NumeroMesa,
-
             };
+            comandas.Add(novaComanda);
+            return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
         }
 
         // PUT api/<ComandaController>/5
