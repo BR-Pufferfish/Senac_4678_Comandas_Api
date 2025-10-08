@@ -1,4 +1,5 @@
-﻿using Comandas_API.Models;
+﻿using Comandas_API.DTOs;
+using Comandas_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -50,8 +51,29 @@ namespace Comandas_API.Controllers
 
         // POST api/<UsuarioController>
         [HttpPost]
-        public IResul Post([FromBody] Usuario usuario)
+        public IResult Post([FromBody] UsuarioCreateRequest usuarioCreate)
         {
+            if(usuarioCreate.Senha.Length < 6)
+            {
+                return Results.BadRequest("A senha deve ter 6 ou mais caracteres...");
+            }
+            if (usuarioCreate.Nome.Length < 3)
+            {
+                return Results.BadRequest("O nome deve ter 6 ou mais caracteres...");
+            }
+            if (usuarioCreate.Email.Length < 5 || usuarioCreate.Email.Contains("@"))
+            {
+                return Results.BadRequest("O email deve ser válido...");
+            }
+
+            var usuario = new Usuario
+            {
+                Id = usuarios.Count + 1,
+                Nome = usuarioCreate.Nome,
+                Email = usuarioCreate.Email,
+                Senha = usuarioCreate.Senha,
+            };
+
             //adiciona um novo usuario na lista
             usuarios.Add(usuario);
             
@@ -60,7 +82,7 @@ namespace Comandas_API.Controllers
 
         // PUT api/<UsuarioController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
         }
 

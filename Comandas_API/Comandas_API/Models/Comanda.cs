@@ -5,7 +5,6 @@
         public int Id { get; set; }
         public int NumeroMesa { get; set; }
         public string NomeCliente { get; set; } = default!;
-        public bool EstaFechada { get; set; }
         public List<ComandaItem> Itens { get; set; } = new List<ComandaItem>();
     }
 }

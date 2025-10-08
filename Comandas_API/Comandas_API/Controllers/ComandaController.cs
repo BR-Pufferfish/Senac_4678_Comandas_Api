@@ -1,4 +1,5 @@
-﻿using Comandas_API.Models;
+﻿using Comandas_API.DTOs;
+using Comandas_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,21 +18,18 @@ namespace Comandas_API.Controllers
                 Id = 1,
                 NumeroMesa = 1,
                 NomeCliente = "Aninha do grau",
-                EstaFechada = false,
             },
             new Comanda
             {
                 Id = 2,
                 NumeroMesa = 1,
                 NomeCliente = "Aninha do grau",
-                EstaFechada = true,
             },
             new Comanda
             {
                 Id = 1,
                 NumeroMesa = 3,
                 NomeCliente = "Aninha do grau",
-                EstaFechada = false,
             },
         };
 
@@ -56,8 +54,28 @@ namespace Comandas_API.Controllers
 
         // POST api/<ComandaController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResult Post([FromBody] ComandaCreateRequest comandaCreate)
         {
+            if (comandaCreate.NomeCliente.Length < 3)
+            {
+                return Results.BadRequest("O nome do cliente deve ter 3 ou mais caracteres...");
+            }
+            if (comandaCreate.NumeroMesa < 1)
+            {
+                return Results.BadRequest("O número da mesa deve ser maior que 0...");
+            }
+            if (comandaCreate.CardapioItemIds.Length ==0)
+            {   
+                return Results.BadRequest("A comanda deve ter pelo menos 1 item do cardápio...");
+            }
+
+            var novaComanda = new Comanda
+            {
+                Id = comandas.Count + 1,
+                NomeCliente = comandaCreate.NomeCliente,
+                NumeroMesa = comandaCreate.NumeroMesa,
+
+            };
         }
 
         // PUT api/<ComandaController>/5
