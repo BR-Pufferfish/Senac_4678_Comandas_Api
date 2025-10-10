@@ -81,8 +81,12 @@ namespace Comandas_API.Controllers
 
         // PUT api/<ComandaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IResult Put(int id, [FromBody] string value)
         {
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            if (comanda == null)
+                return Results.NotFound("Comanda não encontrada...");
+
         }
 
         // DELETE api/<ComandaController>/5
