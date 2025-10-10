@@ -81,11 +81,14 @@ namespace Comandas_API.Controllers
 
         // PUT api/<ComandaController>/5
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] string value)
+        public IResult Put(int id, [FromBody] ComandaCreateRequest comandaUpdate)
         {
             var comanda = comandas.FirstOrDefault(c => c.Id == id);
             if (comanda == null)
-                return Results.NotFound("Comanda não encontrada...");
+                return Results.NotFound($"Comanda {id} não encontrada...");
+
+            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+            comanda.NomeCliente = comandaUpdate.NomeCliente;
 
         }
 
