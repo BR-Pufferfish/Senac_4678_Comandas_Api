@@ -89,16 +89,21 @@ namespace Comandas_API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
+            // Validações
+            if (usuarioUpdate.Senha.Length < 6)
+                return Results.BadRequest("A senha deve ter 6 ou mais caracteres...");
+
+            // Localiza pelo Id
             var usuario = usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
                 return Results.NotFound($"Usuário {id} não encontrado...");
             
-            // atualiza os dados do usuario
+            // Atualiza os dados do usuario
             usuario.Nome = usuarioUpdate.Nome;
             usuario.Email = usuarioUpdate.Email;
             usuario.Senha = usuarioUpdate.Senha;
 
-            // retorna sem conteudo
+            // Retorna sem conteudo
             return Results.NoContent();
         }
 

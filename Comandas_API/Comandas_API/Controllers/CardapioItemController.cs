@@ -92,7 +92,7 @@ namespace Comandas_API.Controllers
         // PUT api/<CardapioItemController>/5
         // Tres barras /// indica que é um comentário de documentação
         /// <summary>
-        /// Atualiza Cardapio pelo Id
+        ///     Atualiza Cardapio pelo Id
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cardapio"></param>
@@ -100,17 +100,20 @@ namespace Comandas_API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] CardapioItemCreateRequest cardapio)
         {
+            // Validações
+
+            // Localiza pelo Id
             var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
             if (cardapioItem is null)
                 return Results.NotFound($"Usuário {id} não encontrado...");
 
-            // atualiza os dados do cardapio
+            // Atualiza os dados do cardapio
             cardapioItem.Titulo = cardapio.Titulo;
             cardapioItem.Descricao = cardapio.Descricao;
             cardapioItem.Preco = cardapio.Preco;
             cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
 
-            // retorna sem conteudo
+            // Retorna sem conteudo
             return Results.NoContent();
         }
 

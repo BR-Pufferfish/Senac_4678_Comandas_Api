@@ -80,16 +80,28 @@ namespace Comandas_API.Controllers
         }
 
         // PUT api/<ComandaController>/5
+        /// <summary>
+        ///     Atualiza Comanda pelo Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="comandaCreate"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] ComandaCreateRequest comandaUpdate)
+        public IResult Put(int id, [FromBody] ComandaCreateRequest comandaCreate)
         {
+            // Validações
+
+            // Localiza pelo Id
             var comanda = comandas.FirstOrDefault(c => c.Id == id);
             if (comanda == null)
                 return Results.NotFound($"Comanda {id} não encontrada...");
 
-            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
-            comanda.NomeCliente = comandaUpdate.NomeCliente;
+            // Atualiza os dados da comanda
+            comanda.NumeroMesa = comandaCreate.NumeroMesa;
+            comanda.NomeCliente = comandaCreate.NomeCliente;
 
+            // Retorna sem conteudo
+            return Results.NoContent();
         }
 
         // DELETE api/<ComandaController>/5
