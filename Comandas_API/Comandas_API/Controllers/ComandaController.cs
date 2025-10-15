@@ -11,26 +11,44 @@ namespace Comandas_API.Controllers
     public class ComandaController : ControllerBase
     {
 
-        List<Comanda> comandas = new List<Comanda>()
+        static List<Comanda> comandas = new List<Comanda>()
         {
-            new Comanda
-            {
-                Id = 1,
-                NumeroMesa = 1,
-                NomeCliente = "Aninha do grau",
-            },
-            new Comanda
-            {
-                Id = 2,
-                NumeroMesa = 1,
-                NomeCliente = "Aninha do grau",
-            },
-            new Comanda
-            {
-                Id = 1,
-                NumeroMesa = 3,
-                NomeCliente = "Aninha do grau",
-            },
+                new Comanda
+                {
+                    Id = 1,
+                    NomeCliente = "Aninha do grau",
+                    NumeroMesa = 1,
+                    Itens = new List<ComandaItem>()
+                    {
+                        new ComandaItem
+                        {
+                            Id = 1,
+                            CardapioItemId = 1,
+                            ComandaId = 1
+                        },
+                        new ComandaItem
+                        {
+                            Id = 2,
+                            CardapioItemId = 2,
+                            ComandaId = 1
+                        },
+                    }
+                },
+                new Comanda
+                {
+                    Id = 2,
+                    NomeCliente = "Aninha do grau",
+                    NumeroMesa = 1,
+                    Itens = new List<ComandaItem>()
+                    {
+                        new ComandaItem
+                        {
+                            Id = 3,
+                            CardapioItemId = 1,
+                            ComandaId = 1
+                        }
+                    }
+                },
         };
 
         // GET: api/<ComandaController>
@@ -75,6 +93,23 @@ namespace Comandas_API.Controllers
                 NomeCliente = comandaCreate.NomeCliente,
                 NumeroMesa = comandaCreate.NumeroMesa,
             };
+            // Cria a lista de itens da comanda
+            var comandaItens = new List<ComandaItem>();
+
+            // Cria os itens da comanda
+            foreach (var cardapioItemId in comandaCreate.CardapioItemIds)
+            {
+                var comandaItem = new ComandaItem
+                {
+                    Id = novaComanda.Itens.Count + 1,
+                    CardapioItemId = cardapioItemId,
+                    ComandaId = novaComanda.Id
+                };
+                comandaItens.Add(comandaItem);
+            }
+
+            novaComanda.Itens = comandaItens;
+
             comandas.Add(novaComanda);
             return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
         }
@@ -87,18 +122,22 @@ namespace Comandas_API.Controllers
         /// <param name="comandaCreate"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] ComandaCreateRequest comandaCreate)
+        public IResult Put(int id, [FromBody] ComandaCreateRequest comandaUpdate)
         {
-            // Validações
-
             // Localiza pelo Id
-            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+                var comanda = comandas.FirstOrDefault(c => c.Id == id);
+
+            // Validações
+            if (comandaUpdate.NomeCliente.Length < 3)
+                return Results.BadRequest("O nome do cliente deve ter 3 ou mais caracteres...");
+            if (comandaUpdate.NumeroMesa < 1)
+                return Results.BadRequest("O número da mesa deve ser maior que 0...");
             if (comanda == null)
                 return Results.NotFound($"Comanda {id} não encontrada...");
 
             // Atualiza os dados da comanda
-            comanda.NumeroMesa = comandaCreate.NumeroMesa;
-            comanda.NomeCliente = comandaCreate.NomeCliente;
+            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+            comanda.NomeCliente = comandaUpdate.NomeCliente;
 
             // Retorna sem conteudo
             return Results.NoContent();
