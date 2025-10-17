@@ -43,9 +43,8 @@ namespace Comandas_API.Controllers
         {
             var usuario = usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario == null)
-            {
                 return Results.NotFound("Mesa não encontrada...");
-            }
+
             return Results.Ok(usuarios);
         }
 
@@ -54,17 +53,13 @@ namespace Comandas_API.Controllers
         public IResult Post([FromBody] UsuarioCreateRequest usuarioCreate)
         {
             if(usuarioCreate.Senha.Length < 6)
-            {
                 return Results.BadRequest("A senha deve ter 6 ou mais caracteres...");
-            }
+
             if (usuarioCreate.Nome.Length < 3)
-            {
                 return Results.BadRequest("O nome deve ter 6 ou mais caracteres...");
-            }
+
             if (usuarioCreate.Email.Length < 5 || usuarioCreate.Email.Contains("@"))
-            {
                 return Results.BadRequest("O email deve ser válido...");
-            }
 
             var usuario = new Usuario
             {
@@ -109,8 +104,23 @@ namespace Comandas_API.Controllers
 
         // DELETE api/<UsuarioController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            // Localiza pelo Id
+            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+
+            // Retorna não encontrado se for null (404)
+            if (usuario is null)
+                return Results.NotFound($"Usuário {id} não encontrado...");
+
+            // Remove o usuario da lista
+            var removido = usuarios.Remove(usuario);
+
+            // Retorna sem conteudo (204)
+            if (removido)
+                return Results.NoContent();
+
+            return Results.StatusCode(500);
         }
     }
 }

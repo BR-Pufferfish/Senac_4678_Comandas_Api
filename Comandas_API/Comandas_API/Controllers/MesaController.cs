@@ -11,7 +11,7 @@ namespace Comandas_API.Controllers
     public class MesaController : ControllerBase
     {
 
-        List<Mesa> mesas = new List<Mesa>()
+        static List<Mesa> mesas = new List<Mesa>()
         {
             new  Mesa
             {
@@ -34,6 +34,7 @@ namespace Comandas_API.Controllers
             return Results.Ok(mesas);
         }
 
+
         // GET api/<MesaController>/5
         [HttpGet("{id}")]
         public IResult GetResult(int id)
@@ -47,12 +48,27 @@ namespace Comandas_API.Controllers
         }
 
 
-
         // POST api/<MesaController>
         [HttpPost]
-        public void Post([FromBody] MesaCreateRequest mesaCreate)
+        public IResult Post([FromBody] MesaCreateRequest mesaCreate)
         {
+            // Validações
+            if (mesaCreate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero.");
+            
+            // Cria uma nova mesa
+            var novaMesa = new Mesa
+            {
+                Id = mesas.Count + 1,
+                NumeroMesa = mesaCreate.NumeroMesa,
+                Situacao = (int)SituacaoMesa.Disponivel
+            };
 
+            // Adiciona a nova mesa na lista
+            mesas.Add(novaMesa);
+
+            // Retorna a nova mesa criada e o codigo 201 CREATED
+            return Results.Created($"/api/mesa/{novaMesa.Id}", novaMesa);
         }
 
         // PUT api/<MesaController>/5
@@ -61,20 +77,16 @@ namespace Comandas_API.Controllers
         {
             // Validações
             if (mesaUpdate.NumeroMesa <= 0)
-            {
                 return Results.BadRequest("O número da mesa deve ser maior que 0...");
-            }
+
             if (mesaUpdate.Situacao < 0 || mesaUpdate.Situacao > 2)
-            {
                 return Results.BadRequest("A situação da mesa deve ser 0 (Disponível), 1 (Ocupada) ou 2 (Reservada)...");
-            }
+
 
             // Localiza pelo Id
             var mesa = mesas.FirstOrDefault(m => m.Id == id);
             if (mesa == null)
-            {
                 return Results.NotFound($"Mesa {id} não encontrada...");
-            }
 
             // Atualiza os dados
             mesa.NumeroMesa = mesaUpdate.NumeroMesa;
@@ -86,8 +98,23 @@ namespace Comandas_API.Controllers
 
         // DELETE api/<MesaController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            // Localiza pelo Id
+            var mesa = mesas.FirstOrDefault(m => m.Id == id);
+
+            // Retorna não encontrado se for null (404)
+            if (mesa is null)
+                return Results.NotFound($"Mesa {id} não encontrada...");
+
+            // Remove a mesa da lista
+            var removido = mesas.Remove(mesa);
+
+            // Retorna sem conteudo (204)
+            if (removido)
+                return Results.NoContent();
+            
+            return Results.StatusCode(500);
         }
     }
 }

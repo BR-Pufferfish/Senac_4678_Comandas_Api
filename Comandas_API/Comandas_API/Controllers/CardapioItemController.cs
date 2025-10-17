@@ -12,7 +12,7 @@ namespace Comandas_API.Controllers
     public class CardapioItemController : ControllerBase // Herda de ControllerBase para poder responder a requisições http
     {
 
-        List<CardapioItem> cardapios = new List<CardapioItem>()
+        static List<CardapioItem> cardapios = new List<CardapioItem>()
         {
             new CardapioItem
             {
@@ -45,17 +45,13 @@ namespace Comandas_API.Controllers
         public IResult Get(int id)
         {
             // Busca o item do cardápio com o id especificado
-
-            // FirstOrDefault retorna o primeiro item que satisfaz a condição ou null se nenhum for encontrado
             var cardapio = cardapios.FirstOrDefault(c => c.Id == id);
             
             if (cardapio == null)
-            {
                 // Se não encontrar, retorna um status 404 (Not Found)
                 return Results.NotFound("Cardápio não encontrado...");
-            }
 
-            //retorna o valor para o endpoint da API
+            // Retorna o valor para o endpoint da API
             return Results.Ok(cardapio);
         }
 
@@ -63,29 +59,28 @@ namespace Comandas_API.Controllers
 
         // POST api/<CardapioItemController>
         [HttpPost]
-        public IResult Post([FromBody] CardapioItemCreateRequest cardapio)
+        public IResult Post([FromBody] CardapioItemCreateRequest cardapioCreate)
         {
-            if(cardapio.Titulo.Length < 3)
-            {
+            if(cardapioCreate.Titulo.Length < 3)
                 return Results.BadRequest("O título deve ter 3 ou mais caracteres...");
-            }
-            if(cardapio.Descricao.Length < 5)
-            {
+
+            if(cardapioCreate.Descricao.Length < 5)
                 return Results.BadRequest("A descrição deve ter 5 ou mais caracteres...");
-            }
-            if (cardapio.Preco <= 0)
-            {
+
+            if (cardapioCreate.Preco <= 0)
                 return Results.BadRequest("O preço deve ser maior que zero...");
-            }
+
             var cardapioItem = new CardapioItem
             {
                 Id = cardapios.Count + 1,
-                Titulo = cardapio.Titulo,
-                Descricao = cardapio.Descricao,
-                Preco = cardapio.Preco,
-                PossuiPreparo = cardapio.PossuiPreparo,
+                Titulo = cardapioCreate.Titulo,
+                Descricao = cardapioCreate.Descricao,
+                Preco = cardapioCreate.Preco,
+                PossuiPreparo = cardapioCreate.PossuiPreparo,
             };
+
             cardapios.Add(cardapioItem);
+
             return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
 
@@ -98,20 +93,18 @@ namespace Comandas_API.Controllers
         /// <param name="cardapio"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] CardapioItemCreateRequest cardapio)
+        public IResult Put(int id, [FromBody] CardapioItemUpdateRequest cardapioUpdate)
         {
-            // Validações
-
             // Localiza pelo Id
             var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
             if (cardapioItem is null)
                 return Results.NotFound($"Usuário {id} não encontrado...");
 
             // Atualiza os dados do cardapio
-            cardapioItem.Titulo = cardapio.Titulo;
-            cardapioItem.Descricao = cardapio.Descricao;
-            cardapioItem.Preco = cardapio.Preco;
-            cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
+            cardapioItem.Titulo = cardapioUpdate.Titulo;
+            cardapioItem.Descricao = cardapioUpdate.Descricao;
+            cardapioItem.Preco = cardapioUpdate.Preco;
+            cardapioItem.PossuiPreparo = cardapioUpdate.PossuiPreparo;
 
             // Retorna sem conteudo
             return Results.NoContent();
@@ -119,8 +112,23 @@ namespace Comandas_API.Controllers
 
         // DELETE api/<CardapioItemController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            // Localiza pelo Id
+            var cardapioItem = cardapios.FirstOrDefault(c => c.Id == id);
+
+            // Retorna não encontrado se for null (404)
+            if (cardapioItem is null)
+                return Results.NotFound($"Cardápio {id} não encontrado...");
+
+            // Remove o item do cardápio
+            var removido = cardapios.Remove(cardapioItem);
+
+            // Retorna sem conteudo (204)
+            if (removido)
+                return Results.NoContent();
+
+            return Results.StatusCode(500);
         }
     }
 }

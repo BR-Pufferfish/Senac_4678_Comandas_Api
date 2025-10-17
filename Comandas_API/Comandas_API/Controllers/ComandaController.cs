@@ -75,17 +75,11 @@ namespace Comandas_API.Controllers
         public IResult Post([FromBody] ComandaCreateRequest comandaCreate)
         {
             if (comandaCreate.NomeCliente.Length < 3)
-            {
                 return Results.BadRequest("O nome do cliente deve ter 3 ou mais caracteres...");
-            }
             if (comandaCreate.NumeroMesa < 1)
-            {
                 return Results.BadRequest("O número da mesa deve ser maior que 0...");
-            }
             if (comandaCreate.CardapioItemIds.Length == 0)
-            {   
                 return Results.BadRequest("A comanda deve ter pelo menos 1 item do cardápio...");
-            }
 
             var novaComanda = new Comanda
             {
@@ -145,8 +139,23 @@ namespace Comandas_API.Controllers
 
         // DELETE api/<ComandaController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IResult Delete(int id)
         {
+            // Localiza pelo Id
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+
+            // Retorna não encontrado se for null (404)
+            if (comanda == null)
+                return Results.NotFound($"Comanda {id} não encontrada...");
+
+            // Remove a comanda da lista
+            var removido = comandas.Remove(comanda);
+
+            // Retorna sem conteudo (204)
+            if (removido)
+                return Results.NoContent();
+
+            return Results.StatusCode(500);
         }
     }
 }
