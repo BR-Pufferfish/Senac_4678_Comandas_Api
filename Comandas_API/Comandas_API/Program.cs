@@ -1,6 +1,13 @@
+using Comandas_API;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Configura o DbContext para usar um banco de dados em memória
+builder.Services.AddDbContext<ComandaDbContext>(options =>
+    options.UseInMemoryDatabase("ComandaDb"));
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
