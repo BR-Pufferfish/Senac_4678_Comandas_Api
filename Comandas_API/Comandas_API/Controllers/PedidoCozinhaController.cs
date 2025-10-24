@@ -1,4 +1,5 @@
-﻿using Comandas_API.Models;
+﻿using Comandas_API.DTOs;
+using Comandas_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,48 +11,42 @@ namespace Comandas_API.Controllers
     public class PedidoCozinhaController : ControllerBase
     {
 
-        static List<PedidoCozinha> pedidosCozinha = new List<PedidoCozinha>()
+        private readonly ComandaDbContext _context;
+        public PedidoCozinhaController(ComandaDbContext context)
         {
-            new PedidoCozinha
-            {
-                Id = 1,
-                ComandaId = 1,
-            },
-            new PedidoCozinha
-            {
-                Id = 2,
-                ComandaId = 1,
-            },
-        };
+            _context = context;
+        }
 
         // GET: api/<PedidoController>
         [HttpGet]
         public IResult Get()
         {
-            return Results.Ok(pedidosCozinha);
+            return Results.Ok(_context.PedidoCozinha);
         }
 
         // GET api/<PedidoController>/5
         [HttpGet("{id}")]
         public IResult GetResult(int id)
         {
-            var pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id);
+            var pedido = _context.PedidoCozinha.FirstOrDefault(p => p.Id == id);
             if (pedido == null)
                 return Results.NotFound("Mesa não encontrada...");
 
-            return Results.Ok(pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id));
+            return Results.Ok(pedido);
         }
 
         // POST api/<PedidoController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IResult Post([FromBody] PedidoCozinhaCreateRequest pedidoCozinhaItemCreateRequest)
         {
+
         }
 
         // PUT api/<PedidoController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IResult Put(int id, [FromBody] PedidoCozinhaUpdateRequest value)
         {
+
         }
 
         // DELETE api/<PedidoController>/5

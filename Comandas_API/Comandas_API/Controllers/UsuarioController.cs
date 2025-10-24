@@ -10,30 +10,20 @@ namespace Comandas_API.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-
-        static List<Usuario> usuarios = new List<Usuario>()
+        // Variável que representa o banco de dados
+        private readonly ComandaDbContext _context;
+        
+        // Construtor
+        public UsuarioController(ComandaDbContext context)
         {
-            new Usuario
-            {
-                Id = 1,
-                Nome = "Admin",
-                Email = "admin@admin.com",
-                Senha = "admin",
-            },
-            new Usuario
-            {
-                Id = 2,
-                Nome = "Usuario",
-                Email = "usuario@usuario.com",
-                Senha = "usuario",
-            },
-        };
-
+            _context = context;
+        }
 
         // GET: api/<UsuarioController>
         [HttpGet]
         public IResult Get()
         {
+            var usuarios = _context.Usuario.ToList();
             return Results.Ok(usuarios);
         }
 
@@ -41,11 +31,11 @@ namespace Comandas_API.Controllers
         [HttpGet("{id}")]
         public IResult GetResult(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuario.FirstOrDefault(u => u.Id == id);
             if (usuario == null)
                 return Results.NotFound("Mesa não encontrada...");
 
-            return Results.Ok(usuarios);
+            return Results.Ok(_context.Usuario);
         }
 
         // POST api/<UsuarioController>
@@ -58,20 +48,20 @@ namespace Comandas_API.Controllers
             if (usuarioCreate.Nome.Length < 3)
                 return Results.BadRequest("O nome deve ter 6 ou mais caracteres...");
 
-            if (usuarioCreate.Email.Length < 5 || usuarioCreate.Email.Contains("@"))
+            if (usuarioCreate.Email.Length < 5 || !usuarioCreate.Email.Contains("@"))
                 return Results.BadRequest("O email deve ser válido...");
 
             var usuario = new Usuario
             {
-                Id = usuarios.Count + 1,
                 Nome = usuarioCreate.Nome,
                 Email = usuarioCreate.Email,
                 Senha = usuarioCreate.Senha,
             };
 
-            //adiciona um novo usuario na lista
-            usuarios.Add(usuario);
-            
+            // Adiciona um novo usuario na lista
+            _context.Usuario.Add(usuario);
+            _context.SaveChanges();
+
             return Results.Created($"/api/usuario/{usuario.Id}", usuario);
         }
 
@@ -84,19 +74,22 @@ namespace Comandas_API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
+
+            // Localiza pelo Id
+            var usuario = _context.Usuario.FirstOrDefault(u => u.Id == id);
+            if (usuario is null)
+                return Results.NotFound($"Usuário {id} não encontrado...");
+
             // Validações
             if (usuarioUpdate.Senha.Length < 6)
                 return Results.BadRequest("A senha deve ter 6 ou mais caracteres...");
-
-            // Localiza pelo Id
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
-            if (usuario is null)
-                return Results.NotFound($"Usuário {id} não encontrado...");
             
             // Atualiza os dados do usuario
             usuario.Nome = usuarioUpdate.Nome;
             usuario.Email = usuarioUpdate.Email;
             usuario.Senha = usuarioUpdate.Senha;
+
+            _context.SaveChanges();
 
             // Retorna sem conteudo
             return Results.NoContent();
@@ -107,17 +100,18 @@ namespace Comandas_API.Controllers
         public IResult Delete(int id)
         {
             // Localiza pelo Id
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuario.FirstOrDefault(u => u.Id == id);
 
             // Retorna não encontrado se for null (404)
             if (usuario is null)
                 return Results.NotFound($"Usuário {id} não encontrado...");
 
             // Remove o usuario da lista
-            var removido = usuarios.Remove(usuario);
+             _context.Usuario.Remove(usuario);
+            var removido = _context.SaveChanges();
 
             // Retorna sem conteudo (204)
-            if (removido)
+            if (removido>0)
                 return Results.NoContent();
 
             return Results.StatusCode(500);
