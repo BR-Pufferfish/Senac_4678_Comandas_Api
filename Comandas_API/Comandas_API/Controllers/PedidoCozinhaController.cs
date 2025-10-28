@@ -21,7 +21,7 @@ namespace Comandas_API.Controllers
         [HttpGet]
         public IResult Get()
         {
-            return Results.Ok(_context.PedidoCozinha);
+            return Results.Ok(_context.PedidoCozinha.ToList());
         }
 
         // GET api/<PedidoController>/5
@@ -30,23 +30,53 @@ namespace Comandas_API.Controllers
         {
             var pedido = _context.PedidoCozinha.FirstOrDefault(p => p.Id == id);
             if (pedido == null)
-                return Results.NotFound("Mesa não encontrada...");
+                return Results.NotFound($"Pedido {id} não encontrado...");
 
             return Results.Ok(pedido);
         }
 
         // POST api/<PedidoController>
         [HttpPost]
-        public IResult Post([FromBody] PedidoCozinhaCreateRequest pedidoCozinhaItemCreateRequest)
+        public IResult Post([FromBody] PedidoCozinhaCreateRequest pedidoCreate)
         {
+            if (pedidoCreate.Itens == null || !pedidoCreate.Itens.Any())
+                return Results.BadRequest("O pedido deve conter ao menos um item...");
+            if (pedidoCreate.ComandaId <= 0)
+                return Results.BadRequest("O pedido deve conter uma Comanda válida...");
+
+            var pedido = new PedidoCozinha
+            {
+                ComandaId = pedidoCreate.ComandaId,
+
+            };
+
+            // Cria a lista de itens do pedido
+            var itens = new List<PedidoCozinhaItem>();
+
+            return Results.Created($"/api/pedidoCozinha/{pedido.Id}", pedido);
 
         }
 
         // PUT api/<PedidoController>/5
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] PedidoCozinhaUpdateRequest value)
+        public IResult Put(int id, [FromBody] PedidoCozinhaUpdateRequest pedidoUpdate)
         {
+            // Localiza pelo Id
+            var pedido = _context.PedidoCozinha.FirstOrDefault(p => p.Id == id);
+            if (pedido is null)
+                return Results.NotFound($"Pedido {id} não encontrado...");
 
+            // Validações
+            if (pedidoUpdate.Itens == null || !pedidoUpdate.Itens.Any())
+                return Results.BadRequest("O pedido deve conter ao menos um item...");
+
+            // Atualiza os dados do pedido
+            pedido.ComandaId = pedidoUpdate.ComandaId;
+            
+            _context.SaveChanges();
+
+            // Retorna sem conteudo (204)
+            return Results.NoContent();
         }
 
         // DELETE api/<PedidoController>/5
@@ -54,17 +84,18 @@ namespace Comandas_API.Controllers
         public IResult Delete(int id)
         {
             // Localiza pelo Id
-            var pedido = pedidosCozinha.FirstOrDefault(p => p.Id == id);
+            var pedido = _context.PedidoCozinha.FirstOrDefault(p => p.Id == id);
 
             // Retorna não encontrado se for null (404)
             if (pedido == null)
                 return Results.NotFound($"Pedido {id} não encontrado...");
 
             // Remove o pedido da lista
-            var removido = pedidosCozinha.Remove(pedido);
+            _context.PedidoCozinha.Remove(pedido);
+            var removido = _context.SaveChanges();
 
             // Retorna sem conteudo (204)
-            if (removido)
+            if (removido>0)
                 return Results.NoContent();
 
             return Results.StatusCode(500);

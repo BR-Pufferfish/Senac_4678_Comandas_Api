@@ -23,8 +23,7 @@ namespace Comandas_API.Controllers
         [HttpGet]
         public IResult Get()
         {
-            var usuarios = _context.Usuario.ToList();
-            return Results.Ok(usuarios);
+            return Results.Ok(_context.Usuario.ToList());
         }
 
         // GET api/<UsuarioController>/5
@@ -74,7 +73,6 @@ namespace Comandas_API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
-
             // Localiza pelo Id
             var usuario = _context.Usuario.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
@@ -91,7 +89,7 @@ namespace Comandas_API.Controllers
 
             _context.SaveChanges();
 
-            // Retorna sem conteudo
+            // Retorna sem conteudo (204)
             return Results.NoContent();
         }
 

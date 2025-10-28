@@ -20,9 +20,9 @@ namespace Comandas_API.Controllers
 
         // GET: api/<MesaController>
         [HttpGet]
-        public IResult GetMesas()
+        public IResult Get()
         {
-            return Results.Ok(_context.Mesa);
+            return Results.Ok(_context.Mesa.ToList());
         }
 
 

@@ -19,9 +19,9 @@ namespace Comandas_API.Controllers
 
         // GET: api/<ComandaController>
         [HttpGet]
-        public IResult GetComandas()
+        public IResult Get()
         {
-            return Results.Ok(_context.Comanda);
+            return Results.Ok(_context.Comanda.ToList());
         }
 
         // GET api/<ComandaController>/5
@@ -91,7 +91,7 @@ namespace Comandas_API.Controllers
                 return Results.BadRequest("O nome do cliente deve ter 3 ou mais caracteres...");
             if (comandaUpdate.NumeroMesa < 1)
                 return Results.BadRequest("O número da mesa deve ser maior que 0...");
-            if (comanda == null)
+            if (comanda is null)
                 return Results.NotFound($"Comanda {id} não encontrada...");
 
             // Atualiza os dados da comanda

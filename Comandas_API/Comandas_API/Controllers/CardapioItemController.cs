@@ -24,8 +24,7 @@ namespace Comandas_API.Controllers
         [HttpGet] //Anotação que indica se o método responde a requisições GET
         public IResult GetCardapios()
         {
-            var cardapios = _context.CardapioItem.ToList();
-            return Results.Ok(cardapios);
+            return Results.Ok(_context.CardapioItem.ToList());
         }
 
         // GET api/<CardapioItemController>/5
