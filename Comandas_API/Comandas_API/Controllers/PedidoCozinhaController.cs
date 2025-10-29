@@ -47,11 +47,21 @@ namespace Comandas_API.Controllers
             var pedido = new PedidoCozinha
             {
                 ComandaId = pedidoCreate.ComandaId,
-
+                
             };
 
             // Cria a lista de itens do pedido
             var itens = new List<PedidoCozinhaItem>();
+            foreach (var item in pedidoCreate.Itens)
+            {
+                var pedidoItem = new PedidoCozinhaItem
+                {
+                    ComandaItemId = item.ComandaItemId
+                };
+                itens.Add(pedidoItem);
+            }
+
+            pedido.Itens = itens;
 
             return Results.Created($"/api/pedidoCozinha/{pedido.Id}", pedido);
 
@@ -72,6 +82,7 @@ namespace Comandas_API.Controllers
 
             // Atualiza os dados do pedido
             pedido.ComandaId = pedidoUpdate.ComandaId;
+
             
             _context.SaveChanges();
 

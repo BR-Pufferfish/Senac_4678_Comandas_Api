@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Configura o DbContext para usar um banco de dados em memória
 builder.Services.AddDbContext<ComandaDbContext>(options =>
-    options.UseInMemoryDatabase("ComandaDb"));
+    options.UseSqlite("DataSource=comandas.db"));
 
 
 builder.Services.AddControllers();

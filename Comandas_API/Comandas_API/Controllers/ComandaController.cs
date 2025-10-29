@@ -61,13 +61,46 @@ namespace Comandas_API.Controllers
                 var comandaItem = new ComandaItem
                 {
                     CardapioItemId = cardapioItemId,
-                    ComandaId = novaComanda.Id
+                    Comanda = novaComanda
                 };
+
+                // Adiciona o item na lista de itens da comanda
                 comandaItens.Add(comandaItem);
+
+                // Criar o pedido de cozinha e o item de acordo com o cardapio possuiPreparo
+                var cardapioItem = _context.CardapioItem.FirstOrDefault(c => c.Id == item.CardapioItemId);
+                if (cardapioItem != null && cardapioItem.PossuiPreparo)
+                {
+                    var pedido = new PedidoCozinha
+                    {
+                        Comanda = novaComanda,
+
+                    };
+                    _context.PedidoCozinha.Add(pedido);
+                    var pedidoItem = new PedidoCozinhaItem
+                    {
+                        PedidoCozinha = pedido,
+                        ComandaItem = item,
+                    };
+                }
+
+
             }
+
+            // Atribui os itens à comanda
             novaComanda.Itens = comandaItens;
 
+            // Adiciona a comanda ao contexto
             _context.Comanda.Add(novaComanda);
+
+
+
+
+            // criar os pedidos dos cardapio itens que possuem preparo
+            foreach (var item in comandaItens)
+            {
+                
+            }
             _context.SaveChanges();
 
             return Results.Created($"/api/comanda/{novaComanda.Id}", novaComanda);
