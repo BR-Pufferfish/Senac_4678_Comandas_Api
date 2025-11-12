@@ -115,7 +115,7 @@ namespace Comandas_API.Controllers
         /// <param name="comandaCreate"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public IResult Put(int id, [FromBody] ComandaCreateRequest comandaUpdate)
+        public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate)
         {
             // Localiza pelo Id
                 var comanda = _context.Comanda.FirstOrDefault(c => c.Id == id);
@@ -132,8 +132,42 @@ namespace Comandas_API.Controllers
             comanda.NumeroMesa = comandaUpdate.NumeroMesa;
             comanda.NomeCliente = comandaUpdate.NomeCliente;
 
+            // Percorre os itens para adicionar ou remover
+            foreach (var itemUpdate in comandaUpdate.Itens)
+            {
+                if(itemUpdate.Id >0 && itemUpdate.Remove == true)
+                {
+                    //removendo
+                    RemoverItemComanda(itemUpdate.Id);
+                }
+                if(itemUpdate.CardapioItemId >0)
+                {
+                    //adicionando
+                    InserirItemComanda(comanda, itemUpdate.CardapioItemId);
+                }
+            }
+
+            _context.SaveChanges();
             // Retorna sem conteudo
             return Results.NoContent();
+        }
+
+        private void InserirItemComanda(Comanda comanda, int cardapioItemId)
+        {
+            _context.ComandaItem.Add(new ComandaItem
+            {
+                CardapioItemId = cardapioItemId,
+                Comanda = comanda
+            });
+        }
+
+        private void RemoverItemComanda(int id)
+        {
+            var comandaItem = _context.ComandaItem.FirstOrDefault(ci => ci.Id == id);
+            if (comandaItem != null)
+            {
+                _context.ComandaItem.Remove(comandaItem);
+            }
         }
 
         // DELETE api/<ComandaController>/5
