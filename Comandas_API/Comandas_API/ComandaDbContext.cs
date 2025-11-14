@@ -52,19 +52,19 @@ namespace Comandas_API
                     new Models.Mesa 
                     { Id = 1,
                       NumeroMesa = 10,
-                      Situacao = 1
+                      SituacaoMesa = 0
                     },
                     new Models.Mesa
                     {
                         Id = 2,
                         NumeroMesa = 11,
-                        Situacao = 2
+                        SituacaoMesa = 1
                     },
                     new Models.Mesa
                     {
                         Id = 3,
                         NumeroMesa = 12,
-                        Situacao = 3
+                        SituacaoMesa = 2
                     }
                 );
 

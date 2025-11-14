@@ -51,7 +51,7 @@ namespace Comandas_API.Controllers
             var novaMesa = new Mesa
             {
                 NumeroMesa = mesaCreateRequest.NumeroMesa,
-                Situacao = (int)SituacaoMesa.Disponivel
+                SituacaoMesa = (int)SituacaoMesa.Livre
             };
 
             // Adiciona a nova mesa na lista
@@ -79,7 +79,7 @@ namespace Comandas_API.Controllers
 
             // Atualiza os dados
             mesa.NumeroMesa = mesaUpdateRequest.NumeroMesa;
-            mesa.Situacao = mesaUpdateRequest.Situacao;
+            mesa.SituacaoMesa = mesaUpdateRequest.Situacao;
 
             // Retorna sem conteudo
             return Results.NoContent();
