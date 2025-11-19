@@ -68,6 +68,24 @@ namespace Comandas_API
                     }
                 );
 
+            modelBuilder.Entity<Models.CategoriaCardapio>()
+                .HasData(
+                    new Models.CategoriaCardapio
+                    {
+                        Id = 1,
+                        Nome = "Salgados"
+                    },
+                    new Models.CategoriaCardapio
+                    {
+                        Id = 2,
+                        Nome = "Doces"
+                    },
+                    new Models.CategoriaCardapio
+                    {
+                        Id = 3,
+                        Nome = "Bebidas"
+                    }
+                );
 
             base.OnModelCreating(modelBuilder);
         }
@@ -80,5 +98,7 @@ namespace Comandas_API
         public DbSet<Models.PedidoCozinha> PedidoCozinha { get; set; } = default!;
         public DbSet<Models.CardapioItem> CardapioItem { get; set; } = default!;
         public DbSet<Models.PedidoCozinhaItem> PedidoCozinhaItem { get; set; } = default!;
+        public DbSet<Models.CategoriaCardapio> CategoriaCardapio { get; set; } = default!;
+
     }
 }
