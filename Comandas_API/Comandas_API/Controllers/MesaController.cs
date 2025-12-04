@@ -82,6 +82,7 @@ namespace Comandas_API.Controllers
             mesa.SituacaoMesa = mesaUpdateRequest.Situacao;
 
             // Retorna sem conteudo
+            _context.SaveChanges();
             return Results.NoContent();
         }
 
