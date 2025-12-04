@@ -32,12 +32,18 @@ var app = builder.Build();
 
 app.UseCors("MinhaPolitica");
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+// Criar o banco de dados e aplicar migrações
+// cria um escopo para obter instâncias de serviços com tempo de vida gerenciado
+using (var scope = app.Services.CreateScope())
+{
+    // obtem um objeto ComandaDbContext do contêiner de serviços
+    var db = scope.ServiceProvider.GetRequiredService<ComandaDbContext>();
+    // executa as migrações pendentes para o banco de dados
+    await db.Database.MigrateAsync();
+}
 app.UseSwagger();
-    app.UseSwaggerUI();
-//}
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
