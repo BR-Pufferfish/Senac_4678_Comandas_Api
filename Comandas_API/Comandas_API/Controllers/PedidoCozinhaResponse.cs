@@ -1,9 +1,9 @@
-﻿namespace Comandas_API.DTOs
+﻿namespace Comandas_API.Controllers
 {
     public class PedidoCozinhaResponse
     {
         public int Id { get; set; }
         public int ComandaId { get; set; }
-        public List<PedidoCozinhaItemResponse> Itens { get; set; } = [];
-    } 
+        public IEnumerable<PedidoCozinhaItemResponse> Itens { get; internal set; }
+    }
 }

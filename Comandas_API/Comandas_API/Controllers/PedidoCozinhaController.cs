@@ -1,6 +1,7 @@
 ﻿using Comandas_API.DTOs;
 using Comandas_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,7 +22,7 @@ namespace Comandas_API.Controllers
         [HttpGet]
         public IResult Get()
         {
-            var pedido = _context.PedidoCozinha
+            var pedidos = _context.PedidoCozinha
                 .Select(p => new PedidoCozinhaResponse
                 {
                     Id = p.Id,
@@ -29,14 +30,15 @@ namespace Comandas_API.Controllers
                     Itens = p.Itens.Select(pi => new PedidoCozinhaItemResponse
                     {
                         Id = pi.Id,
-                        Titulo = _dbContext.CardapioItems
-                                .First(ci = ci.Id == _dbContext.ComandaItens
-                                        .First(ci => ci.Id == pi.ComandaItemId).CardapioItemId
-                                 ).Titulo
-                    })
+                        Titulo =
+                                _context.CardapioItem
+                            .First(ci => ci.Id == _context.ComandaItem
+                                                    .First(ci => ci.Id == pi.ComandaItemId).CardapioItemId
+                             ).Titulo
+                    }),
                 })
                 .ToList();
-            return Results.Ok(pedido);
+            return Results.Ok(pedidos);
         }
 
         // GET api/<PedidoController>/5
