@@ -66,16 +66,16 @@ namespace Comandas_API.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] MesaUpdateRequest mesaUpdateRequest)
         {
-            // Localiza pelo Id
-            var mesa = _context.Mesa.FirstOrDefault(m => m.Id == id);
-            if (mesa == null)
-                return Results.NotFound($"Mesa {id} não encontrada...");
-
             // Validações
             if (mesaUpdateRequest.NumeroMesa <= 0)
                 return Results.BadRequest("O número da mesa deve ser maior que 0...");
             if (mesaUpdateRequest.Situacao < 0 || mesaUpdateRequest.Situacao > 2)
                 return Results.BadRequest("A situação da mesa deve ser 0 (Disponível), 1 (Ocupada) ou 2 (Reservada)...");
+
+            // Localiza pelo Id
+            var mesa = _context.Mesa.FirstOrDefault(m => m.Id == id);
+            if (mesa == null)
+                return Results.NotFound($"Mesa {id} não encontrada...");
 
             // Atualiza os dados
             mesa.NumeroMesa = mesaUpdateRequest.NumeroMesa;

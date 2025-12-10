@@ -76,11 +76,16 @@ namespace Comandas_API.Controllers
                 NumeroMesa = comandaCreate.NumeroMesa,
             };
 
+
+            var mesa = _context.Mesa
+            .FirstOrDefault(m => m.NumeroMesa == comandaCreate.NumeroMesa);
+            mesa.SituacaoMesa = 1; // ocupada
+
             // Cria a lista de itens da comanda
             var comandaItens = new List<ComandaItem>();
 
             // Cria os itens da comanda
-            foreach (var cardapioItemId in comandaCreate.CardapioItemIds)
+            foreach (int cardapioItemId in comandaCreate.CardapioItemIds)
             {
                 var comandaItem = new ComandaItem
                 {
@@ -92,7 +97,7 @@ namespace Comandas_API.Controllers
                 comandaItens.Add(comandaItem);
 
                 // Criar o pedido de cozinha e o item de acordo com o cardapio possuiPreparo
-                var cardapioItem = _context.CardapioItem.FirstOrDefault(ci => ci.Id == comandaItem.CardapioItemId);
+                var cardapioItem = _context.CardapioItem.FirstOrDefault(ci => ci.Id == cardapioItemId);
                 if (cardapioItem!.PossuiPreparo)
                 {
                     var pedido = new PedidoCozinha
@@ -100,11 +105,10 @@ namespace Comandas_API.Controllers
                         Comanda = novaComanda,
 
                     };
-                    _context.PedidoCozinha.Add(pedido);
                     var pedidoItem = new PedidoCozinhaItem
                     {
-                        PedidoCozinha = pedido,
                         ComandaItem = comandaItem,
+                        PedidoCozinha = pedido,
                     };
                     _context.PedidoCozinha.Add(pedido);
                     _context.PedidoCozinhaItem.Add(pedidoItem);
