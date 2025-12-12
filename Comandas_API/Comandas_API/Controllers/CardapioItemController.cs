@@ -80,6 +80,8 @@ namespace Comandas_API.Controllers
             _context.CardapioItem.Add(cardapioItem);
             _context.SaveChanges();
 
+           
+
             return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
 
